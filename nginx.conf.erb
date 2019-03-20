@@ -1,0 +1,43 @@
+worker_processes 4;
+
+events {
+  worker_connections 1024;
+}
+
+http {
+  access_log /dev/stdout;
+  error_log  /dev/stderr info;
+
+  gzip_proxied any;
+
+  <%= plain %>
+
+  <% services.each do |name, addresses| %>
+  upstream <%= name %> {
+    <%- if addresses.any? -%>
+    <%- addresses.each do |address| -%>
+    server <%= address %>;
+    <%- end -%>
+    <%- end -%>
+  }
+  <%- end -%>
+
+  server {
+    listen 80 default_server;
+    server_name _;
+    proxy_set_header Host $host;
+    sendfile off;
+    proxy_cache_valid 0;
+
+    <% data['locations'].each do |location| %>
+    location <%= location['location'] %> {
+      proxy_pass $scheme://<%= location['proxy'] %>;
+      <%- if location['auth'] -%>
+      auth_request     <%= location['auth'] %>;
+      error_page       401 =302 $scheme://$host/;
+      <%- end -%>
+      <%= location['custom'] %>
+    }
+    <% end %>
+  }
+}

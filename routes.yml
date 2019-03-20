@@ -1,0 +1,23 @@
+locations:
+- location: /
+  proxy: web
+- location: /assets
+  proxy: web
+- location: /admin?
+  proxy: admin
+  auth: /authentication/admin_authorized
+  custom: >
+    auth_request_set $user_id $upstream_http_user_id;
+    proxy_set_header User-Id $user_id;
+    auth_request_set $user_type $upstream_http_user_type;
+    proxy_set_header User-Type $user_type;
+- location: /authentication
+  proxy: authentication
+  custom: >
+    internal;
+    proxy_pass_request_body off;
+    proxy_set_header Content-Length "";
+    proxy_set_header Host $host;
+    proxy_set_header X-Original-URI $request_uri;
+    sendfile off;
+    proxy_cache_valid 0;

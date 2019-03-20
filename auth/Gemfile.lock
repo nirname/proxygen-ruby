@@ -1,0 +1,14 @@
+GEM
+  specs:
+    puma (3.11.4)
+    rack (2.0.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  puma
+  rack
+
+BUNDLED WITH
+   1.16.1

@@ -1,0 +1,11 @@
+upstream web {
+  server 0.0.0.0;
+}
+
+upstream admin {
+  server 0.0.0.0;
+}
+
+upstream authentication {
+  server 0.0.0.0;
+}

@@ -1,0 +1,4 @@
+upstream service-name {
+<<< range service "full-service-name" >>>
+server <<< .Address >>>:<<< .Port >>>;<<< end >>>
+}

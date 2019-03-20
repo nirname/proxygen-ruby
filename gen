@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+require 'yaml'
+
+unless ARGF.filename != "-" or (not STDIN.tty? and not STDIN.closed?)
+  STDERR.puts "Awaiting file with routes or input from `cat`" or exit(1)
+end
+
+routes = ARGF.read
+
+data = YAML.load routes
+path = ENV['DISCOVERY_PATH']
+extname = File.extname(path).downcase
+
+STDERR.puts 'DISCOVERY_PATH is not set' or exit(1) unless path
+
+plain = nil
+services = []
+
+plain = File.read(path)
+case extname
+when '.yml', '.yaml'
+  services = YAML.load(plain)['services']
+  plain = nil
+end
+
+locations = data['locations']
+require 'erb'
+
+puts ERB.new(File.read('nginx.conf.erb'), nil, '-').result(binding)
